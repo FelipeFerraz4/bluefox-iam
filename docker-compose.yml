@@ -16,14 +16,13 @@ services:
     image: quay.io/keycloak/keycloak:26.6.1
     container_name: bluefox-iam-server
     # Trocado para 'start' e removido o import automático se não quiser sobrescrever sempre
-    command: start --import-realm
+    command: ${KC_COMMAND}
     environment:
       KC_DB: postgres
       KC_DB_URL: jdbc:postgresql://keycloak-db:5432/${DB_NAME}
       KC_DB_USERNAME: ${DB_USER}
       KC_DB_PASSWORD: ${DB_PASSWORD}
       KC_HOSTNAME: ${KC_HOSTNAME} # Domínio Real
-      KC_PROXY: edge
       KC_PROXY_HEADERS: xforwarded
       KC_HTTP_ENABLED: "true" # O Nginx fala HTTP com o container na rede interna
       KC_BOOTSTRAP_ADMIN_USERNAME: ${KC_ADMIN_USER}
@@ -34,7 +33,7 @@ services:
     # Removi o mapeamento de portas 8080:8080 se você for usar APENAS via Nginx
     # Mas se quiser testar antes, pode manter.
     ports:
-      - "8080:8080"
+      - "${KC_PORT_INNER}:${KC_PORT_OUTER}"
     volumes:
       - ./realm-config:/opt/keycloak/data/import
       - ./themes:/opt/keycloak/themes
